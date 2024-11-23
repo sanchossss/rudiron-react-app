@@ -1,0 +1,47 @@
+
+/* tt travels-400 - cyrillic_latin */
+@font-face {
+    font-display: swap;
+    font-family: 'TTTravels';
+    font-style: normal;
+    font-weight: 400;
+    src: url('assets/fonts/TTTravels-Regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+
+/* tt travels-500 - cyrillic_latin */
+@font-face {
+    font-display: swap; 
+    font-family: 'TTTravels';
+    font-style: normal;
+    font-weight: 500;
+    src: url('assets/fonts/TTTravels-Medium.woff2') format('woff2');
+}
+
+
+/* tt travels-600 - cyrillic_latin */
+@font-face {
+    font-display: swap; 
+    font-family: 'TTTravels';
+    font-style: normal;
+    font-weight: 600;
+    src: url('assets/fonts/TTTravels-DemiBold.woff2') format('woff2');
+}
+
+/* urbanist-400 - cyrillic_latin */
+@font-face {
+    font-display: swap; 
+    font-family: 'Urbanist';
+    font-style: normal;
+    font-weight: 500;
+    src: url('assets/fonts/Urbanist-Medium.ttf') format('truetype');
+}
+
+/* urbanist-500 - cyrillic_latin */
+@font-face {
+    font-display: swap; 
+    font-family: 'Urbanist';
+    font-style: normal;
+    font-weight: 600;
+    src: url('assets/fonts/Urbanist-Bold.ttf') format('truetype');
+}

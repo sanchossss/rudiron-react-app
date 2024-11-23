@@ -1,0 +1,37 @@
+
+
+/* Основной стиль кнопки */
+.button {
+    display: flex; /* Для горизонтального размещения текста и иконки */
+    align-items: center; /* Вертикальное выравнивание содержимого */
+    padding: 24px 16px;
+    gap: 8px;
+    justify-content: center;
+    background-color: var(--primary-bg);
+    color: var(--primary);
+}
+
+/* Стиль кнопки при наведении */
+.button:hover {
+    transform: translateY(-2px); /* Лёгкий "подъём" */
+}
+
+/* Стиль кнопки при нажатии */
+.button:active { /* Ещё темнее цвет при клике */
+    transform: translateY(0); /* Возврат */
+}
+
+/* Добавляем фокус */
+.button:focus {
+    outline: 2px solid #80bdff; /* Контур вокруг кнопки */
+    outline-offset: 2px; /* Отступ от кнопки */
+}
+
+/* Стиль для иконки внутри кнопки */
+.icon {
+    display: inline-block; /* Блочный элемент в строке */
+    vertical-align: middle; /* Выравнивание по центру */
+    width: 24px; /* Стандартный размер иконки */
+    height: 24px; /* Стандартный размер иконки */
+    fill: currentColor; /* Наследует цвет текста */
+}

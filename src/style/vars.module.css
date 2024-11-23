@@ -1,0 +1,41 @@
+html {
+    font-size:16px;
+}
+
+:root {
+
+    /* Основные цвета */
+    --primary: #F26721;
+    --primary-bg: #512F1F;
+    --fg-1: #fff;
+    --fg-2:#BDBDBD;
+    --fg-3:#666;
+    --bg-1: #2B2B2B;
+    --bg-2: #313131;
+    --bg-3: #3F3F3F;
+    --bg-4: #6C6C6C;
+    --stroke-1: #444444;
+    --stroke-2: #FFFFFF;
+
+    /* Цвета блоков */
+    --vars: #86D13A;
+    --ser-port: #D1C03A;
+    --loop-setup: #9747FF;
+    --delay: #D13A9A;
+    --cycles: #4D74F4;
+    --if-else: #3AA4D1;
+    --read-write: #D13A3A;
+
+
+    /*------Шрифты------*/
+    --font-family-titles: 'TTTravels';
+    --font-family-body: 'Urbanist';
+    --font-size-h5: 28px;
+    --font-size-h6: 20px;
+    --font-size-large: 20px;
+    --font-size-big: 18px;
+    --font-size-def: 16px;
+    --font-size-small: 12px;
+    --font-weight-med: 500;
+    --font-weight-bold: 600;
+}
