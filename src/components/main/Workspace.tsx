@@ -3,14 +3,15 @@ import Menu from "./Sidebar";
 import VariableBlock from "../Blocks/Var/VariableBlock";
 import VariableSelectorBlock from "../Blocks/Var/VariableSelectorBlock";
 import SetupBlock from "../Blocks/Func/SetupBlock";
-
-import "../App.css";
+import "../../App.css";
 
 const Workspace: React.FC = () => {
     const [offset, setOffset] = useState({ x: 0, y: 0 });
     const [isPanning, setIsPanning] = useState(false);
     const [blocks, setBlocks] = useState<{ id: string; position: { x: number; y: number }; element: JSX.Element }[]>([]);
+    const [isWorkspaceHovered, setIsWorkspaceHovered] = useState(false);
     const startPoint = useRef({ x: 0, y: 0 });
+    const workspaceRef = useRef<HTMLDivElement>(null); // Ref for the workspace element
 
     const handleMouseDownCanvas = (event: React.MouseEvent<HTMLDivElement>) => {
         if ((event.target as HTMLElement).classList.contains("workspace")) {
@@ -44,9 +45,65 @@ const Workspace: React.FC = () => {
     const moveBlock = (id: string, position: { x: number; y: number }) => {
         setBlocks((prevBlocks) =>
             prevBlocks.map((block) =>
-                block.id === id ? { ...block, position, element: React.cloneElement(block.element, { position }) } : block
+                block.id === id
+                    ? { ...block, position, element: React.cloneElement(block.element, { position }) }
+                    : block
             )
         );
+    };
+
+    const handleDragEnter = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsWorkspaceHovered(true);
+    };
+
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+    };
+
+    const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+        if (event.relatedTarget && (event.relatedTarget as HTMLElement).closest(".workspace") === null) {
+            setIsWorkspaceHovered(false);
+        }
+    };
+
+    const generateCode = () => {
+        let setupCode = "";
+        let loopCode = "";
+    
+        const workspaceElement = workspaceRef.current;
+        if (workspaceElement) {
+            // Convert the HTMLCollection to an array
+            const blocks = Array.from(workspaceElement.getElementsByClassName("draggable"));
+    
+            blocks.forEach((blockElement) => {
+                const block = blockElement as HTMLElement;
+                const top = parseInt(block.style.top || "0", 10);
+                const code = block.dataset.code || "// Missing code";
+                console.log(block)
+    
+                if (top < 150) {
+                    setupCode += `  ${code}\n`;
+                } else {
+                    loopCode += `  ${code}\n`;
+                }
+            });
+        }
+    
+        const code = `
+        void setup() {
+        ${setupCode}}
+    
+        void loop() {
+        ${loopCode}}`;
+    
+        console.log("Generated Code:\n", code);
+    };
+    
+
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        setIsWorkspaceHovered(false);
     };
 
     const blockDefinitions = [
@@ -59,37 +116,40 @@ const Workspace: React.FC = () => {
                     id={Date.now().toString()}
                     position={{ x: 0, y: 0 }}
                     onMove={moveBlock}
+                    code="int myVariable = 10;"
                 />
             ),
         },
         {
-            id: "variable-selector", // Уникальный идентификатор для нового блока
-            label: "Выбор переменной", // Отображаемое название
+            id: "variable-selector",
+            label: "Выбор переменной",
             createBlock: () => (
                 <VariableSelectorBlock
                     key={Date.now()}
                     id={Date.now().toString()}
                     position={{ x: 0, y: 0 }}
                     onMove={moveBlock}
+                    code="myVariable = 20;"
                 />
             ),
         },
         {
             id: "setup",
-            label: "Setup Block",
+            label: "Функция инициализации",
             createBlock: () => (
                 <SetupBlock
                     key={Date.now()}
                     id={Date.now().toString()}
                     position={{ x: 0, y: 0 }}
                     onMove={moveBlock}
+                    code="void setup() { // setup code }"
                 />
             ),
         },
     ];
 
     return (
-        <div className="app-container">
+        <div className="app-container" style={{ display: "flex", height: "100vh" }}>
             <Menu
                 blocks={blockDefinitions.map((def) => ({
                     id: def.id,
@@ -101,32 +161,51 @@ const Workspace: React.FC = () => {
                 }
             />
             <div
-                className="workspace"
+                ref={workspaceRef} // Attach the ref to the workspace div
+                className={`workspace ${isWorkspaceHovered ? "drag-over" : ""}`}
                 onMouseDown={handleMouseDownCanvas}
                 onMouseMove={handleMouseMoveCanvas}
                 onMouseUp={handleMouseUpCanvas}
                 onMouseLeave={handleMouseUpCanvas}
+                onDragEnter={handleDragEnter}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
                 style={{
-                    cursor: isPanning ? "grabbing" : "grab",
                     backgroundPosition: `${offset.x}px ${offset.y}px`,
-                    backgroundColor: "#2b2b2b",
-                    position: "relative",
-                    width: "100vw",
-                    height: "100vh",
                 }}
             >
                 {blocks.map((block) => (
                     <div
                         key={block.id}
+                        className="draggable"
                         style={{
                             position: "absolute",
                             left: block.position.x + offset.x,
                             top: block.position.y + offset.y,
                         }}
+                        data-code={block.element.props.code} // Attach code as a data attribute
                     >
                         {block.element}
                     </div>
                 ))}
+            </div>
+            <div style={{ padding: "10px", textAlign: "center" }}>
+                <button
+                    id="generateButton"
+                    onClick={generateCode}
+                    style={{
+                        padding: "10px 20px",
+                        fontSize: "16px",
+                        backgroundColor: "#4caf50",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                    }}
+                >
+                    Generate Code
+                </button>
             </div>
         </div>
     );

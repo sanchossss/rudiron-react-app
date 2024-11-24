@@ -1,0 +1,95 @@
+/* Main container for the variable block */
+.variable-block {
+    display: flex;
+    flex-direction: column;
+    background-color: #4caf50; /* Green background */
+    border: 2px solid #76d275; /* Green border */
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Shadow */
+    font-family: "Arial", sans-serif;
+    cursor: grab;
+    width: 100%;
+    min-width: 320px; /* Minimum width */
+    transition: border 0.3s ease; /* Smooth border transition */
+}
+
+/* Highlight block in red if there's an error */
+.variable-block.error {
+    border-color: red; /* Red border */
+}
+
+/* Row for arranging fields in a single line */
+.variable-row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    width: 100%;
+}
+
+/* Label for fields */
+.variable-label,
+.variable-type {
+    position: absolute;
+    top: -12px;
+    background-color: #2b2b2b; /* Dark background for labels */
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: #76d275; /* Green text */
+    font-size: 12px;
+    font-weight: bold;
+    border: 1px solid #76d275;
+}
+
+/* Position adjustment for specific labels */
+.variable-type {
+    left: 240px;
+}
+
+/* Dropdown styles */
+.variable-dropdown {
+    background-color: #1e1e1e; /* Dark background */
+    color: white;
+    border: 1px solid #444444; /* Dark border */
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: "Arial", sans-serif;
+    font-size: 14px;
+    outline: none;
+    flex: 1; /* Takes available space */
+    cursor: pointer;
+    appearance: none; /* Removes default browser styles */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFFFFF'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); /* Dropdown arrow */
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+}
+
+/* Input field styles */
+.variable-input {
+    background-color: #1e1e1e; /* Dark background */
+    color: white;
+    border: 1px solid #444444; /* Dark border */
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: "Arial", sans-serif;
+    font-size: 14px;
+    outline: none;
+    flex: 2; /* Wider than the dropdown */
+    box-sizing: border-box;
+}
+
+/* Hover styles for fields */
+.variable-dropdown:hover,
+.variable-input:hover {
+    border-color: #76d275; /* Green border on hover */
+}
+
+/* Hover animation for the block */
+.variable-block:hover {
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+    transition: all 0.2s ease-in-out;
+}

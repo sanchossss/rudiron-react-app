@@ -1,83 +1,82 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useVariableContext } from "./VariableContext";
 import Block from "../BlockTemplate";
-import '../../vars.css';
-import '../../assets/fonts.css';
+import "./VariableSelectorBlock.css"; // Подключение CSS файла
 
 interface VariableSelectorBlockProps {
     id: string;
     position: { x: number; y: number };
     onMove: (id: string, position: { x: number; y: number }) => void;
+    code: string; // Code passed to the block
 }
 
-const VariableSelectorBlock: React.FC<VariableSelectorBlockProps> = ({ id, position, onMove }) => {
+const VariableSelectorBlock: React.FC<VariableSelectorBlockProps> = ({
+    id,
+    position,
+    onMove,
+    code,
+}) => {
     const [selectedVariable, setSelectedVariable] = useState<string | null>(null);
     const [isDraggingEnabled, setIsDraggingEnabled] = useState(true);
     const { variables } = useVariableContext();
 
     // Получение уникальных имен переменных
-    const uniqueVariables = Array.from(new Set(variables.map((variable) => variable.name)));
+    const uniqueVariables = Array.from(
+        new Set(variables.map((variable) => variable.name.split(" ")[0])) // Берём только название переменной
+    );
 
+    // Функция для обновления кода
+    const generateCode = (variableName: string | null): string => {
+        return variableName ? `${variableName};` : "// No variable selected";
+    };
+
+    // Обновляем `code` при изменении переменной
     const handleVariableChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setSelectedVariable(event.target.value);
+        const variableName = event.target.value;
+        setSelectedVariable(variableName);
     };
 
-    const generateCode = (): string => {
-        return selectedVariable ? `${selectedVariable};` : "// No variable selected";
-    };
-
+    // Управление перетаскиванием
     const disableDragging = () => setIsDraggingEnabled(false);
     const enableDragging = () => setIsDraggingEnabled(true);
 
     const noop = () => {};
+
+    useEffect(() => {
+        // Обновляем `code` при изменении выбранной переменной
+        if (selectedVariable !== null) {
+            const newCode = generateCode(selectedVariable);
+            onMove(id, { ...position }); // Обновляем позицию, если необходимо
+            //console.log(`Updated code for block ${id}: ${newCode}`);
+        }
+    }, [selectedVariable, id, position, onMove]);
 
     return (
         <Block
             id={id}
             type="variable-selector"
             position={position}
-            code={generateCode()}
+            code={generateCode(selectedVariable)} // Генерация текущего кода
             onMove={isDraggingEnabled ? onMove : noop}
         >
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    backgroundColor: "#3f51b5",
-                    color: "white",
-                    padding: "10px",
-                    borderRadius: "5px",
-                    boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                    cursor: isDraggingEnabled ? "grab" : "default",
-                    border: selectedVariable ? "2px solid transparent" : "2px solid red", // Красная обводка, если переменная не выбрана
-                }}
-            >
-                <label style={{ display: "flex", alignItems: "center", flex: "1" }}>
-                    Переменная:
-                    <select
-                        value={selectedVariable || ""}
-                        onChange={handleVariableChange}
-                        onFocus={disableDragging}
-                        onBlur={enableDragging}
-                        style={{
-                            marginLeft: "5px",
-                            padding: "5px",
-                            borderRadius: "3px",
-                            border: "1px solid #ccc",
-                            width: "100px",
-                        }}
-                    >
-                        <option value="" disabled>
-                            Выберите
+            <div className="variable-selector-block">
+                <label className="variable-label">Переменная</label>
+                <select
+                    value={selectedVariable || ""}
+                    onChange={handleVariableChange}
+                    className="variable-selector-dropdown"
+                    onFocus={disableDragging}
+                    onBlur={enableDragging}
+                >
+                    <option value="" disabled>
+                        Выберите переменную
+                    </option>
+                    {uniqueVariables.map((variableName) => (
+                        <option key={variableName} value={variableName}>
+                            {variableName}
                         </option>
-                        {uniqueVariables.map((variableName) => (
-                            <option key={variableName} value={variableName}>
-                                {variableName}
-                            </option>
-                        ))}
-                    </select>
-                </label>
+                    ))}
+                </select>
             </div>
         </Block>
     );

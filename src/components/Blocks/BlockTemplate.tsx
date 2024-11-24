@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from "react";
-import '../../style/vars.css';
-import '../../style/fonts.css';
+// import '../../style/vars.css';
+// import '../../style/fonts.css';
 
 interface BlockProps {
     id: string;

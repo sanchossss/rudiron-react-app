@@ -1,7 +1,7 @@
 // VariableContext.tsx
 import React, { createContext, useContext, useState } from "react";
-import '../../vars.css';
-import '../../../style/vars.css';
+// import '../../vars.css';
+// import '../../../style/vars.css';
 
 interface Variable {
     id: string;

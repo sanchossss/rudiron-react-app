@@ -1,38 +1,21 @@
-.App {
-  text-align: center;
+/* Styles for the workspace */
+.workspace {
+  flex-grow: 1;
+  background-color: #1e1e1e; /* Dark background */
+  background-image: radial-gradient(circle, #444 1px, transparent 1px); /* Grid dots */
+  background-size: 20px 20px;
+  overflow: hidden;
+  position: relative;
+  cursor: grab;
+  transition: border 0.2s ease, background-color 0.2s ease; /* Smooth transition */
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Highlight workspace when dragging */
+.workspace.drag-over {
+  border: 3px solid #ff9800; /* Orange border when block is dragged over */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Style while moving the workspace */
+.workspace:active {
+  cursor: grabbing;
 }
