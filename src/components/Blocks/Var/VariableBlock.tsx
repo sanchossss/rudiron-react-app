@@ -7,10 +7,18 @@ interface VariableBlockProps {
     id: string;
     position: { x: number; y: number };
     onMove: (id: string, position: { x: number; y: number }) => void;
-    code: string; // Initial code prop
+    code: string;
+    onCodeChange: (id: string, newCode: string) => void; // Callback for code updates
 }
 
-const VariableBlock: React.FC<VariableBlockProps> = ({ id, position, onMove, code}) => {
+const VariableBlock: React.FC<VariableBlockProps> = ({ id, position, onMove, code, onCodeChange }) => {
+    const [variableType, setVariableType] = useState("int");
+    const [variableName, setVariableName] = useState(`var${id}`);
+    const [currentCode, setCode] = useState(`${variableType} ${variableName};`);
+
+    // Generate the updated code dynamically
+    const generateCode = () => `${variableType} ${variableName};`;
+
     const typeMapping = {
         int: "Целое число",
         float: "Число с плавающей точкой",
@@ -20,9 +28,6 @@ const VariableBlock: React.FC<VariableBlockProps> = ({ id, position, onMove, cod
         bool: "Логический тип",
     };
 
-    const [variableType, setVariableType] = useState("int"); // Default type
-    const [variableName, setVariableName] = useState(`var${id}`); // Default name
-    const [currentCode, setCode] = useState(`int var${id}`);
     const [isDraggingEnabled, setIsDraggingEnabled] = useState(true);
     const { variables, updateVariable } = useVariableContext();
 
@@ -31,23 +36,29 @@ const VariableBlock: React.FC<VariableBlockProps> = ({ id, position, onMove, cod
         updateVariable(id, variableName);
     }, [variableName, id, updateVariable]);
 
-    // Generate the code dynamically
-    const generateCode = (): string => {
-        return `${code};`;
-    };
-
-    // Handlers for type and name changes
-    const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setVariableType(event.target.value);
-    };
-
-
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setVariableName(event.target.value);
-        code = `${variableType} ${event.target.value}`;
-        setCode(`${variableType} ${event.target.value};`)
-        console.log(code); 
+        const newCode = `${variableType} ${event.target.value};`;
+        setCode(newCode);
+    
+        if (typeof onCodeChange === "function") {
+            onCodeChange(id, newCode); // Notify parent
+        } else {
+            console.warn("onCodeChange prop is missing or not a function.");
+        }
+    };
+    
+    const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setVariableType(event.target.value);
+        const newCode = `${event.target.value} ${variableName};`;
+        setCode(newCode);
+    
+        if (typeof onCodeChange === "function") {
+            onCodeChange(id, newCode); // Notify parent
+        } else {
+            console.warn("onCodeChange prop is missing or not a function.");
+        }
     };
 
     // Handlers to enable/disable dragging during interactions
@@ -67,7 +78,7 @@ const VariableBlock: React.FC<VariableBlockProps> = ({ id, position, onMove, cod
             <div className="variable-block">
                 <div className="variable-row">
                     {/* Dropdown for selecting variable type */}
-                    <label className="variable-type">Тип данных</label>
+                    <label className="variable-type">Наименование</label>
                     <select
                         value={variableType}
                         onChange={handleTypeChange}
@@ -83,7 +94,7 @@ const VariableBlock: React.FC<VariableBlockProps> = ({ id, position, onMove, cod
                     </select>
 
                     {/* Input for variable name */}
-                    <label className="variable-label">Наименование</label>
+                    <label className="variable-label">Тип данных</label>
                     <input
                         type="text"
                         value={variableName}

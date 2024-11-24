@@ -3,6 +3,7 @@ import Menu from "./Sidebar";
 import VariableBlock from "../Blocks/Var/VariableBlock";
 import VariableSelectorBlock from "../Blocks/Var/VariableSelectorBlock";
 import SetupBlock from "../Blocks/Func/SetupBlock";
+import SerialInitBlock from "../Blocks/SerialPort/SerialPortInit";
 import "../../App.css";
 
 const Workspace: React.FC = () => {
@@ -38,7 +39,16 @@ const Workspace: React.FC = () => {
         const id = `${Date.now()}`;
         setBlocks((prevBlocks) => [
             ...prevBlocks,
-            { id, position, element: React.cloneElement(block, { id, position, onMove: moveBlock }) },
+            {
+                id,
+                position,
+                element: React.cloneElement(block, {
+                    id,
+                    position,
+                    onMove: moveBlock,
+                    onCodeChange: updateBlockCode, // Ensure it's passed
+                }),
+            },
         ]);
     };
 
@@ -67,39 +77,39 @@ const Workspace: React.FC = () => {
         }
     };
 
+    const updateBlockCode = (id: string, newCode: string) => {
+        setBlocks((prevBlocks) =>
+            prevBlocks.map((block) =>
+                block.id === id
+                    ? {
+                        ...block,
+                        element: React.cloneElement(block.element, { code: newCode }),
+                    }
+                    : block
+            )
+        );
+    };
+
     const generateCode = () => {
         let setupCode = "";
         let loopCode = "";
-    
+
         const workspaceElement = workspaceRef.current;
         if (workspaceElement) {
             // Convert the HTMLCollection to an array
             const blocks = Array.from(workspaceElement.getElementsByClassName("draggable"));
-    
             blocks.forEach((blockElement) => {
                 const block = blockElement as HTMLElement;
                 const top = parseInt(block.style.top || "0", 10);
-                const code = block.dataset.code || "// Missing code";
+                const code = block.dataset.code || "";
                 console.log(block)
-    
-                if (top < 150) {
-                    setupCode += `  ${code}\n`;
-                } else {
-                    loopCode += `  ${code}\n`;
-                }
+                setupCode += ` ${code}\n`
             });
         }
-    
-        const code = `
-        void setup() {
-        ${setupCode}}
-    
-        void loop() {
-        ${loopCode}}`;
-    
-        console.log("Generated Code:\n", code);
+
+        console.log("Generated Code:\n", setupCode);
     };
-    
+
 
     const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
         event.preventDefault();
@@ -117,6 +127,7 @@ const Workspace: React.FC = () => {
                     position={{ x: 0, y: 0 }}
                     onMove={moveBlock}
                     code="int myVariable = 10;"
+                    onCodeChange={updateBlockCode} // Ensure this is passed
                 />
             ),
         },
@@ -129,7 +140,8 @@ const Workspace: React.FC = () => {
                     id={Date.now().toString()}
                     position={{ x: 0, y: 0 }}
                     onMove={moveBlock}
-                    code="myVariable = 20;"
+                    code="myVariable"
+                    onCodeChange={updateBlockCode}
                 />
             ),
         },
@@ -143,6 +155,19 @@ const Workspace: React.FC = () => {
                     position={{ x: 0, y: 0 }}
                     onMove={moveBlock}
                     code="void setup() { // setup code }"
+                />
+            ),
+        },
+        {
+            id: "serial-init",
+            label: "Инициализация Serial",
+            createBlock: () => (
+                <SerialInitBlock
+                    key={Date.now()}
+                    id={Date.now().toString()}
+                    position={{ x: 0, y: 0 }}
+                    onMove={moveBlock}
+                    code="Serial.begin(9600);"
                 />
             ),
         },
@@ -186,7 +211,7 @@ const Workspace: React.FC = () => {
                         }}
                         data-code={block.element.props.code} // Attach code as a data attribute
                     >
-                        {block.element}
+                        {React.cloneElement(block.element, { onCodeChange: updateBlockCode })} {/* Ensure this */}
                     </div>
                 ))}
             </div>

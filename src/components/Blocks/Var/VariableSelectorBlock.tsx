@@ -8,6 +8,7 @@ interface VariableSelectorBlockProps {
     position: { x: number; y: number };
     onMove: (id: string, position: { x: number; y: number }) => void;
     code: string; // Code passed to the block
+    onCodeChange: (id: string, newCode: string) => void; // Callback for code updates
 }
 
 const VariableSelectorBlock: React.FC<VariableSelectorBlockProps> = ({
@@ -15,10 +16,13 @@ const VariableSelectorBlock: React.FC<VariableSelectorBlockProps> = ({
     position,
     onMove,
     code,
+    onCodeChange
 }) => {
     const [selectedVariable, setSelectedVariable] = useState<string | null>(null);
     const [isDraggingEnabled, setIsDraggingEnabled] = useState(true);
     const { variables } = useVariableContext();
+    const [currentCode, setCode] = useState(`${selectedVariable}`);
+
 
     // Получение уникальных имен переменных
     const uniqueVariables = Array.from(
@@ -34,7 +38,17 @@ const VariableSelectorBlock: React.FC<VariableSelectorBlockProps> = ({
     const handleVariableChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const variableName = event.target.value;
         setSelectedVariable(variableName);
+        const newCode = `${event.target.value}`;
+        setCode(newCode);
+
+        if (typeof onCodeChange === "function") {
+            onCodeChange(id, newCode); // Notify parent
+        } else {
+            console.warn("onCodeChange prop is missing or not a function.");
+        }
     };
+
+
 
     // Управление перетаскиванием
     const disableDragging = () => setIsDraggingEnabled(false);
